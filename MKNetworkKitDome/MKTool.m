@@ -7,13 +7,17 @@
 //
 
 #import "MKTool.h"
+
+// without http://
 #define kHostName @""
+
 @implementation MKTool
-+ (MKNetworkHost*)shareMKNetworkHost{
+static MKTool * tool;
+
++ (MKTool*)shareMKNetworkHost{
     static dispatch_once_t once;
-    static MKNetworkHost * tool;
     dispatch_once(&once, ^{
-        tool = [[MKNetworkHost alloc] init];
+        tool = [[MKTool alloc] init];
     });
     return tool;
 }
@@ -24,4 +28,31 @@
     }
     return self;
 }
+
+- (void)loadDataWithParams:(NSMutableDictionary *)params url:(NSString *)url delegage:(id<MKNetworkToolDelegate>)delegate httpMethod:(NSString *)mehtod{
+    //*  The ssl option when true changes the URL to https.
+    //*  The ssl option when false changes the URL to http.
+    MKNetworkRequest * request = [tool requestWithPath:url params:params httpMethod:mehtod body:nil ssl:NO];
+    //add http header if need
+    // request addHeaders:<#(NSDictionary *)#>
+    [request addCompletionHandler:^(MKNetworkRequest *completedRequest) {
+        if (completedRequest.state == MKNKRequestStateCompleted) {
+            [self requestWith:completedRequest delegate:delegate];
+        }else if(completedRequest.state == MKNKRequestStateError){
+            [self requestFailWith:completedRequest delegate:delegate];
+        }
+    }];
+    [tool startRequest:request];
+}
+
+- (void)requestWith:(MKNetworkRequest *)completedRequest delegate:(id<MKNetworkToolDelegate>)delegate{
+    NSLog(@"%@ %@ %@",completedRequest.response.URL.absoluteString,[delegate class],completedRequest.responseAsJSON);
+    [delegate MKNetworkRequested:completedRequest];
+}
+
+- (void)requestFailWith:(MKNetworkRequest *)completedRequest delegate:(id<MKNetworkToolDelegate>)delegate{
+    NSLog(@"%@ %@ %@ %@",completedRequest.response.URL.absoluteString,[delegate class],completedRequest.error,completedRequest.responseAsJSON);
+    [delegate MKNetworkRequestFiled:completedRequest];
+}
+
 @end

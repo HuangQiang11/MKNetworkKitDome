@@ -8,6 +8,13 @@
 
 #import "MKNetworkHost.h"
 
+@protocol MKNetworkToolDelegate <NSObject>
+
+- (void)MKNetworkRequested:(MKNetworkRequest*)completedRequest;
+- (void)MKNetworkRequestFiled:(MKNetworkRequest *)completeRequest;
+
+@end
 @interface MKTool : MKNetworkHost
-+ (MKNetworkHost*)shareMKNetworkHost;
++ (MKTool*)shareMKNetworkHost;
+- (void)loadDataWithParams:(NSMutableDictionary *)params url:(NSString *)url delegage:(id<MKNetworkToolDelegate>)delegate httpMethod:(NSString *)mehtod;
 @end
