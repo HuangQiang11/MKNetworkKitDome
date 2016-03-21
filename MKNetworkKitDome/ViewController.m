@@ -16,17 +16,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
-    
-
 }
 
 
-- (void)PostAction:(UIButton *)button{
+- (void)PostAction{
     [[MKTool shareMKNetworkHost] loadDataWithParams:nil url:@"" delegage:self httpMethod:@"POST"];
 }
 
-- (void)GetAction:(UIButton *)button{
+- (void)GetAction{
     [[MKTool shareMKNetworkHost] loadDataWithParams:nil url:@"" delegage:self httpMethod:@"GET"];
 }
 
